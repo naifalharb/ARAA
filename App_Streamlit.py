@@ -5,7 +5,6 @@ Created on Thu Oct 05 17:42:01 2020
 """
 
 
-
 import streamlit as st
 import warnings
 warnings.filterwarnings("ignore")
@@ -17,9 +16,6 @@ import tweepy
 import json
 from tweepy import OAuthHandler
 import re
-import textblob
-from textblob import TextBlob
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import openpyxl
 import time
 import tqdm
