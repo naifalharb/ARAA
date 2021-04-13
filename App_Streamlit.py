@@ -156,7 +156,7 @@ def main():
     
     #
     from PIL import Image
-    image = Image.open('Logo.png')
+    image = Image.open('logo.png')
     st.image(image, caption='',use_column_width=True)
     
     
