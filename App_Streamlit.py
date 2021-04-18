@@ -1,10 +1,3 @@
-"""
-Created on Thu Oct 05 17:42:01 2020
-
-@author: Abhishek Darekar
-"""
-
-
 import streamlit as st
 import warnings
 warnings.filterwarnings("ignore")
@@ -58,15 +51,13 @@ img {
 </style> """
 
 def main():
-    """ Common ML Dataset Explorer """
-    #st.title("Live twitter Sentiment analysis")
-    #st.subheader("Select a topic which you'd like to get the sentiment analysis on :")
 
     html_temp = """
-	<div style="background-color:tomato;"><p style="color:white;font-size:40px;padding:9px">Live twitter Sentiment analysis</p></div>
+	<div style="background-color:;"><p style="color:white;font-size:30px;padding:9px;text-align:left;">Sentiment Analysis Tool for Arabic Tweets</p></div>
 	"""
-    st.markdown(html_temp, unsafe_allow_html=True)
-    st.subheader("Select a topic which you'd like to get the sentiment analysis on :")
+    st.title("Sentiment Analysis Tool for Arabic Tweets")
+    #st.markdown(html_temp, unsafe_allow_html=True)
+    #st.subheader("Select a topic which you'd like to get the sentiment analysis on :")
 
     ################# Twitter API Connection #######################
     consumer_key = 'qJMwGaoSTmGaAQCiqECHBacSR'
@@ -88,10 +79,8 @@ def main():
     # Write a Function to extract tweets:
     def get_tweets(Topic,Count):
         i=0
-        #my_bar = st.progress(100) # To track progress of Extracted tweets
         for tweet in tweepy.Cursor(api.search, q=Topic,count=100, lang="ar",exclude='retweets').items():
-            #time.sleep(0.1)
-            #my_bar.progress(i)
+            
             df.loc[i,"Date"] = tweet.created_at
             df.loc[i,"User"] = tweet.user.name
             df.loc[i,"IsVerified"] = tweet.user.verified
@@ -99,8 +88,7 @@ def main():
             df.loc[i,"Likes"] = tweet.favorite_count
             df.loc[i,"RT"] = tweet.retweet_count
             df.loc[i,"User_location"] = tweet.user.location
-            #df.to_csv("TweetDataset.csv",index=False)
-            #df.to_excel('{}.xlsx'.format("TweetDataset"),index=False)   ## Save as Excel
+
             i=i+1
             if i>Count:
                 break
@@ -150,16 +138,12 @@ def main():
         else:
             return 'Neutral'
     
-    #Function to Pre-process data for Worlcloud
-    
 
-    
-    #
     from PIL import Image
     image = Image.open('logo.png')
-    st.image(image, caption='',use_column_width=True)
-    
-    
+    st.image(image, caption='',use_column_width='auto', width = 350)
+
+
     # Collect Input from user :
     Topic = str()
     Topic = str(st.text_input("Enter the topic you are interested in (Press Enter once done)"))     
@@ -168,15 +152,15 @@ def main():
         
         # Call the function to extract the data. pass the topic and filename you want the data to be stored in.
         with st.spinner("Please wait, Tweets are being extracted"):
-            get_tweets(Topic , Count=400)
-        st.success('Tweets have been Extracted !!!!')    
+            get_tweets(Topic , Count=500)
+        st.success('Tweets have been Extracted !!')
            
     
         # Call function to get Clean tweets
         df['clean_tweet'] = df['Tweet'].apply(lambda x : clean_tweet(x))
     
         # Call function to get the Sentiments
-        df["Sentiment"] = df["Tweet"].apply(lambda x : analyze_sentiment(x))
+        df["Sentiment"] = df["clean_tweet"].apply(lambda x : analyze_sentiment(x))
         
         
         # Write Summary of the Tweets
@@ -187,7 +171,6 @@ def main():
         
         # See the Extracted Data : 
         if st.button("See the Extracted Data"):
-            #st.markdown(html_temp, unsafe_allow_html=True)
             st.success("Below is the Extracted Data :")
             st.write(df.head(50))
         
@@ -209,16 +192,22 @@ def main():
             explode = (0.1, 0.0, 0.1)
             st.write(plt.pie(d,shadow=True,explode=explode,labels=["Positive","Negative","Neutral"],autopct='%1.2f%%'))
             st.pyplot()
-            
-        
-        
-        
-        
 
 
 
-    if st.button("Exit"):
-        st.balloons()
+
+    st.sidebar.header("About App")
+    st.sidebar.info("The goal of our website is to analyze a set of tweets about a variety of topics using effective machine learning methods. The objective of this website is to collect tweets related to any Arabic topic then implement the suitable sentiment analysis technique that obtain the highest possible outcome. \
+                    The different Visualizations will help us get a feel of the overall mood of the people on Twitter regarding the topic we select.")
+
+    st.sidebar.header("For Any Suggestions Please reach out at :")
+    st.sidebar.info("naifalharbi321@gmail.com\n"
+                    "mf.almadi@gmail.com   \n"
+                    "talal-ov@hotmail.com\n"
+                    "abdullah.ababutain@gmail.com")
+
+
+
 
 
 
