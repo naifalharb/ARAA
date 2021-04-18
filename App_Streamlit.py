@@ -146,7 +146,7 @@ def main():
 
     # Collect Input from user :
     Topic = str()
-    Topic = str(st.text_input("Enter the topic you are interested in (Press Enter once done)"))     
+    Topic = str(st.text_input("Enter the topic you are interested in (بالعربي)(Press Enter once done)"))     
     
     if len(Topic) > 0 :
         
