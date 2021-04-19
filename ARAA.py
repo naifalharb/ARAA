@@ -151,7 +151,7 @@ def main():
 
     # Collect Input from user :
     Topic = str()
-    Topic = str(st.text_input(" (اضغط Enter بعد الانتهاء)ادخل عنوان انت مهتم بمعرفة تحليله"))
+    Topic = str(st.text_input("    (اضغط Enter)  ادخل عنوان باللغة العربيه انت مهتم بمعرفة تحليله "))
     
     if len(Topic) > 0 :
         
