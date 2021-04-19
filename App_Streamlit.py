@@ -18,7 +18,13 @@ from string import digits
 
 punctuations = '''`÷×؛<>_()*&^%][ـ،/:"؟.,'{}~¦+|!”…“–ـ''' + string.punctuation
 
+import nltk
+from nltk.corpus import stopwords
+stop = stopwords.words('arabic')
+#words = set(nltk.corpus.words.words())
+arab_stopwords = set(nltk.corpus.stopwords.words("arabic"))
 
+arab_stopwords = r'\b(?:{})\b'.format('|'.join(arab_stopwords))
 arabic_diacritics = re.compile("""
                              ّ    | # Shadda
                              َ    | # Fatha
@@ -52,12 +58,10 @@ img {
 
 def main():
 
-    html_temp = """
-	<div style="background-color:;"><p style="color:white;font-size:30px;padding:9px;text-align:left;">Sentiment Analysis Tool for Arabic Tweets</p></div>
-	"""
-    st.title("Sentiment Analysis Tool for Arabic Tweets")
-    #st.markdown(html_temp, unsafe_allow_html=True)
-    #st.subheader("Select a topic which you'd like to get the sentiment analysis on :")
+    from PIL import Image
+    im = Image.open('t.png')
+    st.image(im, caption='',use_column_width='auto', width = 350)
+    #st.title("Sentiment Analysis Tool for Arabic Tweets")
 
     ################# Twitter API Connection #######################
     consumer_key = 'qJMwGaoSTmGaAQCiqECHBacSR'
@@ -98,10 +102,11 @@ def main():
     def clean_tweet(tweet):
         remove_digits = str.maketrans('', '', digits)
         tweet =tweet.translate(remove_digits)
+
         tweet=tweet.translate(str.maketrans('', '', punctuations))#removing all ponctuations
         # remove Tashkeel
         tweet = re.sub(arabic_diacritics, '', str(tweet))
-        # text = text.replace(punctuations, '')
+        tweet = re.sub(arab_stopwords, '', tweet)
         tweet = re.sub("@[_A-Za-z0-9]+","",tweet) #Removing mention
         tweet=re.sub("[^\w\s#@/:%.,_-]", "", tweet, flags=re.UNICODE)#REmove emoji
         tweet=re.sub(r'\s*[A-Za-z]+\b', '' , tweet)#remove no arabic word
@@ -146,14 +151,14 @@ def main():
 
     # Collect Input from user :
     Topic = str()
-    Topic = str(st.text_input("Enter the topic you are interested in (بالعربي)(Press Enter once done)"))     
+    Topic = str(st.text_input(" (اضغط Enter بعد الانتهاء)ادخل عنوان انت مهتم بمعرفة تحليله"))
     
     if len(Topic) > 0 :
         
         # Call the function to extract the data. pass the topic and filename you want the data to be stored in.
-        with st.spinner("Please wait, Tweets are being extracted"):
+        with st.spinner("الرجاء الانتظار ، التغريدات في طور الاستخراج"):
             get_tweets(Topic , Count=500)
-        st.success('Tweets have been Extracted !!')
+        st.success('!! تم استخراج التغريدات')
            
     
         # Call function to get Clean tweets
@@ -164,27 +169,27 @@ def main():
         
         
         # Write Summary of the Tweets
-        st.write("Total Tweets Extracted for Topic '{}' are : {}".format(Topic,len(df.Tweet)))
-        st.write("Total Positive Tweets are : {}".format(len(df[df["Sentiment"]=="Positive"])))
-        st.write("Total Negative Tweets are : {}".format(len(df[df["Sentiment"]=="Negative"])))
-        st.write("Total Neutral Tweets are : {}".format(len(df[df["Sentiment"]=="Neutral"])))
+        st.write("مجموع التغريدات المستخرجة للموضوع  '{}' هي : {}".format(Topic,len(df.Tweet)))
+        st.write("مجموع التغريدات الايجابية هي : {}".format(len(df[df["Sentiment"]=="Positive"])))
+        st.write("مجموع التغريدات السلبية هي : {}".format(len(df[df["Sentiment"]=="Negative"])))
+        st.write("مجموع التغريدات المحايدة هي : {}".format(len(df[df["Sentiment"]=="Neutral"])))
         
         # See the Extracted Data : 
-        if st.button("See the Extracted Data"):
-            st.success("Below is the Extracted Data :")
+        if st.button("اطلع على البيانات المستخرجة "):
+            st.success("  البيانات المستخرجة في الاسفل")
             st.write(df.head(50))
         
         
         # get the countPlot
-        if st.button("Get Count Plot for Different Sentiments"):
-            st.success("Generating A Count Plot")
-            st.subheader(" Count Plot for Different Sentiments")
+        if st.button("(Count Plot) اطّلع على الرسم البياني للمشاعر "):
+            st.success("يتم العمل على الرسم البياني")
+            st.subheader(" الرسم البياني لمختلف المشاعر")
             st.write(sns.countplot(df["Sentiment"]))
             st.pyplot()
         
         # Piechart 
-        if st.button("Get Pie Chart for Different Sentiments"):
-            st.success("Generating A Pie Chart")
+        if st.button(" (Pie Chart) اطّلع على المخطط الدائري للمشاعر"):
+            st.success("يتم العمل على المخطط الدائري")
             a=len(df[df["Sentiment"]=="Positive"])
             b=len(df[df["Sentiment"]=="Negative"])
             c=len(df[df["Sentiment"]=="Neutral"])
@@ -196,11 +201,10 @@ def main():
 
 
 
-    st.sidebar.header("About App")
-    st.sidebar.info("The goal of our website is to analyze a set of tweets about a variety of topics using effective machine learning methods. The objective of this website is to collect tweets related to any Arabic topic then implement the suitable sentiment analysis technique that obtain the highest possible outcome. \
-                    The different Visualizations will help us get a feel of the overall mood of the people on Twitter regarding the topic we select.")
+    st.sidebar.header("عن الأداة:")
+    st.sidebar.info("الهدف من موقعنا هو تحليل مجموعة من التغريدات حول مجموعة متنوعة من الموضوعات باستخدام أساليب التعلم الآلي الفعالة, جمع التغريدات المتعلقة بأي موضوع عربي ثم تنفيذ تقنية تحليل المشاعر المناسبة للحصول على أعلى نتيجة ممكنة. ")
 
-    st.sidebar.header("For Any Suggestions Please reach out at :")
+    st.sidebar.header("للاستفسارات او الإقتراحات الرجاء التواصل على :")
     st.sidebar.info("naifalharbi321@gmail.com\n"
                     "mf.almadi@gmail.com   \n"
                     "talal-ov@hotmail.com\n"
